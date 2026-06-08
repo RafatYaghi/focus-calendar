@@ -360,30 +360,7 @@ html,body{height:100%;overflow:hidden;font-family:var(--f);background:var(--bg);
     </div>
   </nav>
 
-  <aside class="sidebar">
-    <div class="sb-sec">
-      <div class="sb-hd">Views</div>
-      <div class="sbr on" onclick="setFilter('all',this)"><span class="sbr-ic">📋</span>All events<span class="sbr-b" id="c-all">0</span></div>
-      <div class="sbr" onclick="setFilter('upcoming',this)"><span class="sbr-ic">⏳</span>Upcoming<span class="sbr-b" id="c-up">0</span></div>
-      <div class="sbr" onclick="setFilter('done',this)"><span class="sbr-ic">✅</span>Done<span class="sbr-b" id="c-done">0</span></div>
-      <div class="sbr" onclick="setFilter('cancelled',this)"><span class="sbr-ic">🚫</span>Cancelled<span class="sbr-b" id="c-can">0</span></div>
-      <div class="sbr" onclick="setFilter('notes',this)"><span class="sbr-ic">📝</span>All notes<span class="sbr-b" id="c-notes">0</span></div>
-    </div>
-    <div class="sb-div"></div>
-    <div class="sb-sec">
-      <div class="sb-hd">Calendars</div>
-      <div id="cal-list"></div>
-    </div>
-    <div class="sb-div"></div>
-    <div class="mini-cal">
-      <div class="mc-hdr">
-        <span class="mc-t" id="mc-title">June 2026</span>
-        <button class="mc-btn" onclick="mcNav(-1)">‹</button>
-        <button class="mc-btn" onclick="mcNav(1)">›</button>
-      </div>
-      <div class="mc-grid" id="mc-grid"></div>
-    </div>
-  </aside>
+
 
   <main class="maincol" id="maincol"></main>
 
