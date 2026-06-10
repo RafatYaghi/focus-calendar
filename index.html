@@ -1,458 +1,237 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Focus — ADHD Day Manager</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Focus Timeline</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f6f3ee;--surface:#fffdf9;--surface2:#f1ede6;--surface3:#e8e0d5;--text:#28231d;--muted:#766f66;--faint:#aaa196;--line:#e4ddd2;--focus:#7c3aed;--meeting:#2563eb;--health:#16a34a;--personal:#ea580c;--urgent:#dc2626;--shadow:0 18px 60px rgba(50,42,33,.12);--r:22px}
-*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:Inter,-apple-system,sans-serif;background:var(--bg);color:var(--text);overflow:hidden}button,input,textarea{font:inherit}.hidden{display:none!important}.tiny{font-size:12px;color:var(--faint)}.soft{color:var(--muted)}.mono{font-variant-numeric:tabular-nums}
-.app{height:100vh;display:grid;grid-template-columns:1fr 390px;grid-template-rows:70px 1fr}.top{grid-column:1/-1;display:flex;align-items:center;gap:14px;padding:0 22px;background:rgba(255,253,249,.86);backdrop-filter:blur(18px);border-bottom:1px solid var(--line);z-index:5}.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px}.brand-dot{width:12px;height:12px;border-radius:50%;background:linear-gradient(135deg,var(--focus),var(--meeting))}.clock{font-size:28px;font-weight:800;letter-spacing:-.06em}.date{font-size:13px;color:var(--muted)}.grow{flex:1}.avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--text);color:white;font-weight:800}
-.btn{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:999px;padding:10px 14px;font-weight:700;font-size:13px;display:inline-flex;gap:8px;align-items:center;justify-content:center;cursor:pointer}.btn:hover{background:#fff}.btn.primary{background:var(--text);border-color:var(--text);color:white}.btn.focus{background:var(--focus);border-color:var(--focus);color:white}.btn.small{padding:7px 10px;font-size:12px}
-.main{overflow:auto;padding:24px 28px 120px}.side{border-left:1px solid var(--line);background:rgba(255,253,249,.72);backdrop-filter:blur(20px);overflow:hidden;display:flex;flex-direction:column}.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;margin-bottom:18px}.morning,.brain{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:20px}.hello{font-size:28px;font-weight:800;letter-spacing:-.06em}.kicker{font-size:12px;text-transform:uppercase;letter-spacing:.13em;color:var(--faint);font-weight:900}.summary{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}.pill{border-radius:999px;padding:7px 10px;font-size:12px;font-weight:800;background:var(--surface2);color:var(--muted)}.deep{background:rgba(124,58,237,.11);color:var(--focus)}.meet{background:rgba(37,99,235,.1);color:var(--meeting)}.easy{background:rgba(22,163,74,.1);color:var(--health)}.warn{background:rgba(220,38,38,.1);color:var(--urgent)}
-.section-title{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--faint);font-weight:900;margin:22px 0 10px;display:flex;align-items:center;gap:10px}.section-title:after{content:"";height:1px;background:var(--line);flex:1}
-.now-card{background:linear-gradient(145deg,#fffdf9,#fbf8f2);border:1px solid var(--line);border-radius:28px;padding:24px;box-shadow:var(--shadow);position:relative;overflow:hidden}.now-card:before{content:"";position:absolute;inset:0 0 auto 0;height:6px;background:var(--c,var(--focus))}.now-grid{display:grid;grid-template-columns:72px 1fr auto;gap:16px;align-items:center}.big-icon{width:72px;height:72px;border-radius:24px;display:grid;place-items:center;font-size:36px;background:var(--tint)}.event-title{font-size:26px;font-weight:900;letter-spacing:-.06em;margin-top:3px}.next-step{margin-top:12px;background:var(--surface2);border:1px solid var(--line);border-radius:16px;padding:12px;font-weight:800}.progress{height:10px;background:var(--surface3);border-radius:999px;overflow:hidden;margin-top:12px}.bar{height:100%;width:0;background:var(--c,var(--focus));border-radius:999px}.card-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.timer-big{font-size:34px;font-weight:900;letter-spacing:-.08em;text-align:right}.empty-now{text-align:center;padding:46px 20px;color:var(--muted)}
-.list{display:grid;gap:10px}.event-row{display:grid;grid-template-columns:52px 44px 1fr auto;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:12px;transition:.12s;cursor:pointer}.event-row:hover{transform:translateY(-1px);box-shadow:0 10px 30px rgba(50,42,33,.07)}.event-row.selected{outline:3px solid var(--tint)}.timebox{text-align:right}.time{font-weight:900}.time2{font-size:11px;color:var(--faint)}.row-icon{width:44px;height:44px;border-radius:15px;display:grid;place-items:center;font-size:23px;background:var(--tint)}.row-title{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.row-meta{font-size:12px;color:var(--muted);margin-top:2px}.task-mini{font-size:11px;color:var(--faint);margin-top:5px}.chip{font-size:11px;font-weight:900;border-radius:999px;padding:5px 8px;background:var(--surface2);color:var(--muted)}
-.brain-title{font-weight:900;font-size:16px}.capture{display:flex;gap:8px;margin-top:12px}.capture input{flex:1;border:1px solid var(--line);border-radius:14px;padding:11px;background:white;outline:none}.dump-list{display:grid;gap:7px;margin-top:12px;max-height:180px;overflow:auto}.dump-item{display:flex;gap:8px;align-items:flex-start;background:var(--surface2);border-radius:12px;padding:9px;font-size:13px}.dump-item input{margin-top:2px}
-.tabs{display:flex;padding:0 16px;border-bottom:1px solid var(--line)}.tab{padding:17px 10px;margin-bottom:-1px;border:0;background:transparent;border-bottom:3px solid transparent;font-size:13px;color:var(--muted);font-weight:900;cursor:pointer}.tab.on{color:var(--focus);border-bottom-color:var(--focus)}.panel{overflow:auto;flex:1;padding:18px}.panel-empty{height:100%;display:grid;place-items:center;text-align:center;color:var(--faint);padding:30px}.detail-head{display:flex;gap:13px;align-items:center}.detail-icon{width:58px;height:58px;border-radius:20px;display:grid;place-items:center;font-size:30px;background:var(--tint)}.detail-title{font-size:22px;font-weight:900;letter-spacing:-.05em}.field{margin:18px 0}.label{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--faint);font-weight:900;margin-bottom:7px}.input,.textarea{width:100%;border:1px solid var(--line);background:white;border-radius:14px;padding:11px;outline:none}.textarea{min-height:110px;resize:vertical}.energy{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}.energy button{border:1px solid var(--line);border-radius:14px;background:white;padding:10px;font-weight:900;cursor:pointer}.energy button.on{outline:3px solid var(--tint);border-color:var(--c)}
-.tasks{display:grid;gap:8px}.task{display:grid;grid-template-columns:auto 1fr auto;gap:9px;align-items:center;background:white;border:1px solid var(--line);border-radius:14px;padding:10px}.task.done .task-text{text-decoration:line-through;color:var(--faint)}.task-text{font-weight:800}.task-est{font-size:11px;color:var(--faint)}.add-task{display:grid;grid-template-columns:1fr 74px auto;gap:7px;margin-top:8px}.add-task input{border:1px solid var(--line);border-radius:12px;padding:9px}.template-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.template{border:1px solid var(--line);background:white;border-radius:14px;padding:10px;text-align:left;font-size:12px;font-weight:900;cursor:pointer}
-.focus-screen{position:fixed;inset:0;background:radial-gradient(circle at top,var(--tint),var(--bg) 52%);z-index:20;display:flex;align-items:center;justify-content:center;padding:22px}.focus-card{width:min(720px,96vw);background:rgba(255,253,249,.9);backdrop-filter:blur(25px);border:1px solid var(--line);border-radius:34px;padding:34px;box-shadow:var(--shadow)}.focus-top{display:flex;align-items:center;gap:14px}.focus-icon{font-size:46px}.focus-title{font-size:30px;font-weight:900;letter-spacing:-.06em}.focus-task{margin-top:24px;background:white;border:1px solid var(--line);border-radius:24px;padding:22px}.focus-task-label{font-size:12px;text-transform:uppercase;letter-spacing:.14em;color:var(--faint);font-weight:900}.focus-task-title{font-size:34px;font-weight:900;letter-spacing:-.07em;margin-top:6px}.focus-next{margin-top:16px;color:var(--muted)}.focus-buttons{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
-.transition{position:fixed;right:24px;bottom:24px;width:360px;background:white;border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);padding:18px;z-index:10}.checklist{display:grid;gap:8px;margin-top:10px}.check{display:flex;gap:8px;align-items:center;color:var(--muted)}
-.auth{position:fixed;inset:0;background:var(--bg);display:grid;place-items:center;z-index:30;padding:20px}.auth-card{width:min(460px,94vw);background:var(--surface);border:1px solid var(--line);border-radius:30px;padding:32px;box-shadow:var(--shadow);text-align:center}.auth-logo{font-size:54px}.auth-title{font-size:34px;font-weight:900;letter-spacing:-.08em}.auth-sub{color:var(--muted);line-height:1.55}.auth-card input{width:100%;border:1px solid var(--line);border-radius:14px;padding:12px;margin:16px 0 8px}.review{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px;margin-top:14px}
-@media(max-width:960px){html,body{overflow:auto}.app{height:auto;min-height:100vh;display:block}.top{position:sticky;top:0}.main{padding:18px 14px}.side{border-left:0;border-top:1px solid var(--line);min-height:600px}.hero{grid-template-columns:1fr}.now-grid{grid-template-columns:52px 1fr}.timer-big{grid-column:1/-1;text-align:left}.big-icon{width:52px;height:52px;border-radius:18px;font-size:28px}.event-title{font-size:22px}.top .date,.top #userName{display:none}}
+:root{--bg:#f6f3ee;--card:#fffdf9;--s:#eee7dc;--line:#ded4c7;--text:#29231d;--muted:#766d63;--faint:#aaa094;--purple:#7c3aed;--blue:#2563eb;--green:#16a34a;--orange:#ea580c;--red:#dc2626;--shadow:0 18px 60px rgba(45,36,26,.12)}
+*{box-sizing:border-box}body{margin:0;height:100vh;overflow:hidden;background:var(--bg);font-family:Inter,sans-serif;color:var(--text)}button,input,textarea{font:inherit}.hidden{display:none!important}.tiny{font-size:12px;color:var(--faint)}.soft{color:var(--muted)}.mono{font-variant-numeric:tabular-nums}
+.auth{position:fixed;inset:0;display:grid;place-items:center;padding:20px}.auth-card{max-width:460px;background:var(--card);border:1px solid var(--line);border-radius:30px;padding:32px;text-align:center;box-shadow:var(--shadow)}.auth-title{font-size:34px;font-weight:900;letter-spacing:-.08em}.auth-card input{width:100%;padding:12px;border:1px solid var(--line);border-radius:14px;margin:14px 0}
+.app{height:100vh;display:grid;grid-template-columns:1fr 430px;grid-template-rows:70px 1fr}.top{grid-column:1/-1;display:flex;align-items:center;gap:14px;padding:0 22px;background:rgba(255,253,249,.9);border-bottom:1px solid var(--line);backdrop-filter:blur(18px)}.brand{font-size:20px;font-weight:900;letter-spacing:-.05em}.dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--blue));margin-right:8px}.clock{font-size:28px;font-weight:900;letter-spacing:-.07em}.grow{flex:1}.avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--text);color:white;font-weight:900}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:10px 14px;font-size:13px;font-weight:800;cursor:pointer}.btn.primary{background:var(--text);color:white}.btn.focus{background:var(--purple);color:white;border-color:var(--purple)}.btn.small{padding:7px 10px;font-size:12px}
+.main{overflow:auto;padding:24px 28px 120px}.side{overflow:hidden;display:flex;flex-direction:column;border-left:1px solid var(--line);background:rgba(255,253,249,.75)}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:16px}.card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:20px;box-shadow:var(--shadow)}.kicker{font-size:12px;text-transform:uppercase;letter-spacing:.13em;color:var(--faint);font-weight:900}.hello{font-size:30px;font-weight:900;letter-spacing:-.07em}.pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.pill{background:var(--s);border-radius:999px;padding:7px 10px;font-size:12px;font-weight:900;color:var(--muted)}
+.capture{display:flex;gap:8px;margin-top:12px}.capture input{flex:1;border:1px solid var(--line);border-radius:14px;padding:11px}.dump{display:grid;gap:7px;margin-top:12px}.dump label{display:flex;gap:8px;background:var(--s);border-radius:12px;padding:9px;font-size:13px}
+.section{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--faint);font-weight:900;margin:24px 0 12px;display:flex;gap:10px;align-items:center}.section:after{content:"";height:1px;background:var(--line);flex:1}
+.timeline{display:grid;gap:12px}.event{display:grid;grid-template-columns:70px 1fr;gap:14px;cursor:pointer}.timecol{text-align:right;padding-top:14px}.time{font-weight:900}.time2{font-size:11px;color:var(--faint)}
+.ecard{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:14px 16px;box-shadow:0 8px 28px rgba(45,36,26,.05);position:relative;overflow:hidden}.ecard:before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--c)}.ecard.sel{outline:3px solid var(--t)}.ecard.now{box-shadow:var(--shadow)}
+.ehead{display:grid;grid-template-columns:48px 1fr auto;gap:12px;align-items:center}.ico{width:48px;height:48px;border-radius:16px;display:grid;place-items:center;background:var(--t);font-size:25px}.title{font-size:17px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.meta{font-size:12px;color:var(--muted)}.chip{font-size:11px;font-weight:900;background:var(--s);border-radius:999px;padding:5px 8px}
+.bar{height:10px;background:#e4dbcf;border-radius:999px;overflow:hidden;margin-top:12px}.fill{height:100%;background:var(--c);border-radius:999px}.taskline{display:flex;justify-content:space-between;gap:12px;margin-top:8px;font-size:12px}.context{font-size:12px;color:var(--muted);background:var(--s);border-radius:12px;padding:8px 10px;margin-top:7px}
+.tabs{display:flex;border-bottom:1px solid var(--line);padding:0 16px}.tab{border:0;background:transparent;padding:17px 10px;margin-bottom:-1px;border-bottom:3px solid transparent;font-size:13px;font-weight:900;color:var(--muted);cursor:pointer}.tab.on{color:var(--purple);border-bottom-color:var(--purple)}.panel{overflow:auto;flex:1;padding:18px}
+.dhead{display:flex;gap:13px;align-items:center}.dico{width:60px;height:60px;border-radius:20px;display:grid;place-items:center;background:var(--t);font-size:30px}.dtitle{font-size:22px;font-weight:900;letter-spacing:-.05em}.field{margin:18px 0}.label{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--faint);font-weight:900;margin-bottom:7px}.input,.textarea{width:100%;border:1px solid var(--line);background:white;border-radius:14px;padding:11px}.textarea{min-height:120px;resize:vertical}
+.energy{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}.energy button,.template{border:1px solid var(--line);background:white;border-radius:14px;padding:10px;font-weight:900}.energy button.on{outline:3px solid var(--t)}
+.tasks{display:grid;gap:8px}.task{display:grid;grid-template-columns:auto 1fr auto;gap:9px;align-items:center;background:white;border:1px solid var(--line);border-radius:14px;padding:10px}.task.done .tt{text-decoration:line-through;color:var(--faint)}.tt{font-weight:800}.est{font-size:11px;color:var(--faint)}.add{display:grid;grid-template-columns:1fr 74px auto;gap:7px;margin-top:8px}.add input{border:1px solid var(--line);border-radius:12px;padding:9px}.templates{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.notegrid{display:grid;grid-template-columns:116px 1fr;gap:10px}.hist{border:1px solid var(--line);background:white;border-radius:12px;padding:9px;text-align:left;font-size:12px;font-weight:800;margin-bottom:6px}.hist.on{outline:3px solid var(--t)}
+.focus-screen{position:fixed;inset:0;background:radial-gradient(circle at top,var(--t),var(--bg) 55%);z-index:20;display:grid;place-items:center;padding:20px}.fcard{width:min(940px,96vw);background:rgba(255,253,249,.94);border:1px solid var(--line);border-radius:34px;padding:30px;box-shadow:var(--shadow)}.fgrid{display:grid;grid-template-columns:1fr 300px;gap:18px}.ftitle{font-size:32px;font-weight:900;letter-spacing:-.07em}.fcurrent{font-size:34px;font-weight:900;letter-spacing:-.07em;background:white;border:1px solid var(--line);border-radius:24px;padding:22px;margin-top:18px}.box{background:white;border:1px solid var(--line);border-radius:20px;padding:14px;margin-bottom:12px}
+.trans{position:fixed;right:24px;bottom:24px;width:360px;background:white;border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);padding:18px;z-index:10}
+@media(max-width:980px){body{overflow:auto}.app{display:block;height:auto}.top{position:sticky;top:0}.main{padding:18px 14px}.side{border-left:0;border-top:1px solid var(--line);min-height:650px}.hero,.fgrid{grid-template-columns:1fr}.event{grid-template-columns:54px 1fr}.notegrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<div class="auth" id="auth">
-  <div class="auth-card">
-    <div class="auth-logo">🎯</div>
-    <div class="auth-title">Focus</div>
-    <p class="auth-sub">An ADHD execution layer on top of Google Calendar. Calendar events stay unchanged. Focus adds goals, tiny tasks, brain dump, and focus mode.</p>
-    <input id="clientId" placeholder="Google OAuth Client ID">
-    <button class="btn primary" style="width:100%" onclick="startAuth()">Sign in with Google</button>
-    <button class="btn" style="width:100%;margin-top:8px" onclick="startDemo()">Try demo</button>
-    <p class="tiny">Uses Google Calendar read-only + Drive AppData storage.</p>
+<div class="auth" id="auth"><div class="auth-card">
+  <div style="font-size:54px">🎯</div><div class="auth-title">Focus</div>
+  <p class="soft">Timeline-first ADHD calendar. Google Calendar provides events. Google Drive stores your goals, tasks, notes history, reviews, and brain dump.</p>
+  <input id="clientId" placeholder="Google OAuth Client ID">
+  <button class="btn primary" style="width:100%" onclick="startAuth()">Sign in with Google</button>
+  <button class="btn" style="width:100%;margin-top:8px" onclick="demo()">Try demo</button>
+  <p class="tiny">Drive AppData is primary storage. Browser cache is fallback only.</p>
+</div></div>
+
+<div id="focusScreen" class="focus-screen hidden"></div>
+<div id="trans" class="trans hidden"></div>
+
+<div id="app" class="app hidden">
+<header class="top">
+  <div class="brand"><span class="dot"></span>Focus</div>
+  <div><div id="clock" class="clock mono">--:--</div><div id="date" class="date tiny"></div></div>
+  <div class="grow"></div><span id="sync" class="tiny">Drive first</span>
+  <button class="btn" onclick="loadAll()">↻ Refresh</button><button class="btn focus" onclick="startFocus()">🎧 Focus</button>
+  <div id="avatar" class="avatar">R</div><span id="name" class="tiny"></span><button class="btn small" onclick="location.reload()">Sign out</button>
+</header>
+<main id="main" class="main"></main>
+<aside class="side">
+  <div class="tabs">
+    <button class="tab on" onclick="tab('plan',this)">Plan</button>
+    <button class="tab" onclick="tab('notes',this)">Notes</button>
+    <button class="tab" onclick="tab('history',this)">History</button>
+    <button class="tab" onclick="tab('review',this)">Review</button>
   </div>
-</div>
-
-<div class="focus-screen hidden" id="focusScreen"></div>
-<div class="transition hidden" id="transitionBox"></div>
-
-<div class="app hidden" id="app">
-  <header class="top">
-    <div class="brand"><span class="brand-dot"></span>Focus</div>
-    <div><div class="clock mono" id="clock">--:--</div><div class="date" id="dateLine">Today</div></div>
-    <div class="grow"></div>
-    <button class="btn" onclick="loadAll()">↻ Refresh</button>
-    <button class="btn focus" onclick="startFocus()">🎧 Focus</button>
-    <div class="avatar" id="avatar">R</div><span class="tiny" id="userName"></span>
-    <button class="btn small" onclick="signOut()">Sign out</button>
-  </header>
-
-  <main class="main" id="main"></main>
-
-  <aside class="side">
-    <div class="tabs">
-      <button class="tab on" onclick="setTab('plan',this)">Plan</button>
-      <button class="tab" onclick="setTab('notes',this)">Notes</button>
-      <button class="tab" onclick="setTab('review',this)">Review</button>
-    </div>
-    <div class="panel" id="panel"></div>
-  </aside>
+  <div id="panel" class="panel"></div>
+</aside>
 </div>
 
 <script>
 const SCOPES='https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/drive.appdata';
-const DRIVE_FILE='focus_adhd_data_v1.json';
-let token=null,tokenClient=null,driveFileId=null,isDemo=false;
-let events=[],selectedId=null,currentTab='plan';
-let state={items:{},brainDump:[],dailyReviews:{},settings:{name:'Rafat'}};
-let focusSession=null;
+const DRIVE_FILE='focus_timeline_adhd_v2.json';
+const OLD_NOTES_FILE='focus_notes.json';
+
+let token=null, driveFileId=null, isDemo=false, events=[], selected=null, currentTab='plan', activeDate=null, saveTimer=null;
+let state={version:2,items:{},brainDump:[],dailyReviews:{},settings:{name:'Rafat'},migratedOldNotes:false};
 
 const $=id=>document.getElementById(id);
 const pad=n=>String(n).padStart(2,'0');
-const dateKey=(d=new Date())=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-const timeM=d=>d.getHours()*60+d.getMinutes();
-const fmtM=m=>`${pad(Math.floor(m/60))}:${pad(m%60)}`;
-const now=()=>new Date();
-const minsNow=()=>timeM(now());
-const safe=s=>(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-const dataFor=e=>state.items[e.id]||(state.items[e.id]={goal:'',energy:guessEnergy(e),tasks:[],notes:'',sessions:[]});
-const doneCount=t=>t.filter(x=>x.done).length;
-const pctTasks=t=>t.length?Math.round(doneCount(t)/t.length*100):0;
-const currentEvent=()=>events.find(e=>e.id===selectedId)||getNowEvent()||getNextEvent();
+const today=()=>{let d=new Date();return`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`};
+const mins=d=>d.getHours()*60+d.getMinutes();
+const nowM=()=>mins(new Date());
+const fm=m=>`${pad(Math.floor(m/60))}:${pad(m%60)}`;
+const esc=s=>(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const plain=h=>{let d=document.createElement('div');d.innerHTML=h||'';return d.textContent||''};
+const slug=s=>(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
 
-window.addEventListener('load',()=>{
-  $('clientId').value=localStorage.getItem('focus_client_id')||'';
-  updateClock();
-  setInterval(()=>{updateClock();render();checkTransition();},30000);
-});
-
-function updateClock(){
-  const d=now();
-  $('clock').textContent=`${pad(d.getHours())}:${pad(d.getMinutes())}`;
-  $('dateLine').textContent=d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
-}
-
-function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
+window.onload=()=>{clientId.value=localStorage.getItem('focus_client_id')||'';clock();setInterval(()=>{clock();render();transition()},30000)};
+function clock(){let d=new Date();$('clock').textContent=`${pad(d.getHours())}:${pad(d.getMinutes())}`;$('date').textContent=d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}
+function sync(t){$('sync').textContent=t}
+function script(src){return new Promise((res,rej)=>{let s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
 
 async function startAuth(){
-  const cid=$('clientId').value.trim();
-  if(!cid)return alert('Paste your Google OAuth Client ID first.');
+  let cid=$('clientId').value.trim(); if(!cid)return alert('Paste Google OAuth Client ID first.');
   localStorage.setItem('focus_client_id',cid);
-  await loadScript('https://accounts.google.com/gsi/client');
-  tokenClient=google.accounts.oauth2.initTokenClient({
-    client_id:cid,
-    scope:SCOPES,
-    callback:async r=>{
-      if(r.error)return alert(r.error);
-      token=r.access_token;
-      isDemo=false;
-      await afterLogin();
-    }
-  });
-  tokenClient.requestAccessToken();
+  await script('https://accounts.google.com/gsi/client');
+  google.accounts.oauth2.initTokenClient({client_id:cid,scope:SCOPES,callback:async r=>{
+    if(r.error)return alert(r.error);
+    token=r.access_token; isDemo=false; await init();
+  }}).requestAccessToken();
 }
-
-async function afterLogin(){
-  $('auth').classList.add('hidden');
-  $('app').classList.remove('hidden');
-  try{
-    const u=await api('https://www.googleapis.com/oauth2/v3/userinfo');
-    $('avatar').textContent=(u.name||'R')[0].toUpperCase();
-    $('userName').textContent=u.name||'';
-  }catch{}
-  await loadState();
-  await loadCalendar();
-  render();
+async function init(){
+  $('auth').classList.add('hidden');$('app').classList.remove('hidden');
+  try{let u=await api('https://www.googleapis.com/oauth2/v3/userinfo');$('avatar').textContent=(u.name||'R')[0].toUpperCase();$('name').textContent=u.name||''}catch{}
+  await loadState(); await migrateOldNotes(); await loadCalendar(); render();
 }
-
-function signOut(){token=null;location.reload();}
-
-async function api(url,opts={}){
-  const r=await fetch(url,{...opts,headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json',...(opts.headers||{})}});
-  if(!r.ok)throw new Error(await r.text());
-  return r.status===204?null:await r.json();
+async function api(url,opt={}){
+  let r=await fetch(url,{...opt,headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json',...(opt.headers||{})}});
+  if(!r.ok)throw Error(await r.text()); return r.status===204?null:await r.json();
 }
-
+async function findFile(name){
+  let q=encodeURIComponent(`name='${name}'`);
+  let d=await api(`https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=${q}`);
+  return d.files?.[0]?.id||null;
+}
 async function loadState(){
   try{
-    const q=encodeURIComponent(`name='${DRIVE_FILE}'`);
-    const found=await api(`https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=${q}`);
-    if(found.files&&found.files.length){
-      driveFileId=found.files[0].id;
-      state=await api(`https://www.googleapis.com/drive/v3/files/${driveFileId}?alt=media`);
-    }else{
-      await saveState();
-    }
-  }catch(e){
-    state=JSON.parse(localStorage.getItem('focus_state')||JSON.stringify(state));
-  }
+    sync('Loading Drive…'); driveFileId=await findFile(DRIVE_FILE);
+    if(driveFileId){state=await api(`https://www.googleapis.com/drive/v3/files/${driveFileId}?alt=media`);sync('Synced to Drive')}
+    else{await saveNow();sync('Created Drive file')}
+    state.items||={};state.brainDump||=[];state.dailyReviews||={};
+  }catch(e){console.warn(e);state=JSON.parse(localStorage.getItem('focus_cache')||JSON.stringify(state));sync('Offline cache')}
 }
-
-async function saveState(){
-  localStorage.setItem('focus_state',JSON.stringify(state));
-  if(isDemo||!token)return;
-  const body=JSON.stringify(state);
+function save(){localStorage.setItem('focus_cache',JSON.stringify(state));clearTimeout(saveTimer);saveTimer=setTimeout(saveNow,500)}
+async function saveNow(){
+  localStorage.setItem('focus_cache',JSON.stringify(state));
+  if(isDemo||!token){sync(isDemo?'Demo mode':'Cached');return}
+  let body=JSON.stringify(state);
   try{
+    sync('Saving Drive…');
     if(driveFileId){
-      await fetch(`https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=media`,{
-        method:'PATCH',
-        headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},
-        body
-      });
+      await fetch(`https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=media`,{method:'PATCH',headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},body});
     }else{
-      const boundary='focusboundary';
-      const meta=JSON.stringify({name:DRIVE_FILE,parents:['appDataFolder']});
-      const mp=`--${boundary}\r\nContent-Type: application/json\r\n\r\n${meta}\r\n--${boundary}\r\nContent-Type: application/json\r\n\r\n${body}\r\n--${boundary}--`;
-      const r=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',{
-        method:'POST',
-        headers:{Authorization:`Bearer ${token}`,'Content-Type':`multipart/related; boundary=${boundary}`},
-        body:mp
-      });
+      let b='b',meta=JSON.stringify({name:DRIVE_FILE,parents:['appDataFolder']});
+      let mp=`--${b}\r\nContent-Type: application/json\r\n\r\n${meta}\r\n--${b}\r\nContent-Type: application/json\r\n\r\n${body}\r\n--${b}--`;
+      let r=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',{method:'POST',headers:{Authorization:`Bearer ${token}`,'Content-Type':`multipart/related; boundary=${b}`},body:mp});
       driveFileId=(await r.json()).id;
     }
+    sync('Synced to Drive');
+  }catch(e){console.warn(e);sync('Drive failed; cached')}
+}
+async function migrateOldNotes(){
+  if(state.migratedOldNotes||isDemo||!token)return;
+  try{
+    let oldId=await findFile(OLD_NOTES_FILE);
+    if(!oldId){state.migratedOldNotes=true;save();return}
+    let old=await api(`https://www.googleapis.com/drive/v3/files/${oldId}?alt=media`);
+    Object.values(old||{}).forEach(nb=>{
+      let key='legacy_'+slug(nb.title);
+      state.items[key]||={goal:'',energy:'medium',tasks:[],notesHistory:[],sessions:[],legacyTitle:nb.title};
+      (nb.entries||[]).forEach(en=>{
+        if(!state.items[key].notesHistory.find(x=>x.date===en.date))state.items[key].notesHistory.push({date:en.date,text:plain(en.html),html:en.html});
+      });
+    });
+    state.migratedOldNotes=true;save();
   }catch(e){console.warn(e)}
 }
-
 async function loadCalendar(){
   if(isDemo)return;
-  const start=new Date();start.setHours(0,0,0,0);
-  const end=new Date(start);end.setDate(end.getDate()+1);
-  const url=`https://www.googleapis.com/calendar/v3/calendars/primary/events?singleEvents=true&orderBy=startTime&timeMin=${encodeURIComponent(start.toISOString())}&timeMax=${encodeURIComponent(end.toISOString())}&maxResults=80`;
-  const data=await api(url);
-  events=(data.items||[]).filter(e=>e.status!=='cancelled').map(gEvent);
+  let s=new Date();s.setHours(0,0,0,0);let e=new Date(s);e.setDate(e.getDate()+1);
+  let d=await api(`https://www.googleapis.com/calendar/v3/calendars/primary/events?singleEvents=true&orderBy=startTime&timeMin=${encodeURIComponent(s.toISOString())}&timeMax=${encodeURIComponent(e.toISOString())}&maxResults=100`);
+  events=(d.items||[]).filter(x=>x.status!=='cancelled').map(gEvent);
 }
-
-async function loadAll(){
-  if(isDemo){render();return}
-  await loadState();
-  await loadCalendar();
-  render();
+async function loadAll(){if(!isDemo){await loadState();await loadCalendar()}render()}
+function gEvent(e){let s=new Date(e.start.dateTime||e.start.date),en=new Date(e.end.dateTime||e.end.date);return{id:e.id,title:e.summary||'(No title)',desc:e.description||'',startM:mins(s),endM:mins(en),icon:icon(e.summary||''),kind:kind(e.summary||'')}}
+function demo(){
+  isDemo=true;$('auth').classList.add('hidden');$('app').classList.remove('hidden');sync('Demo mode');
+  events=[ev('d1','Team standup',9,30,9,50,'meeting'),ev('d2','Deep work: SQL progression logic',10,0,12,0,'focus'),ev('d3','Lunch and reset',12,30,13,15,'health'),ev('d4','Power BI report build',14,0,15,30,'focus')];
+  state={version:2,items:{d2:{goal:'Fix progression report logic',energy:'deep',tasks:[task('Open SQL project',5,true),task('Review issue',15,true),task('Fix TAB_3a debtor rule',40,false),task('Run before/after tests',25,false)],notesHistory:[{date:'2026-06-09',text:'TAB_3a issue seems linked to AP release rule.'},{date:today(),text:'Compare output before and after change.'}],sessions:[]}},brainDump:[{id:id(),text:'Email Carol about ticket',done:false}],dailyReviews:{},migratedOldNotes:true};render()
 }
-
-function gEvent(e){
-  const s=new Date(e.start.dateTime||e.start.date);
-  const en=new Date(e.end.dateTime||e.end.date);
-  return {
-    id:e.id,
-    title:e.summary||'(No title)',
-    desc:e.description||'',
-    location:e.location||'',
-    start:s,
-    end:en,
-    startM:timeM(s),
-    endM:timeM(en),
-    icon:iconFor(e.summary||''),
-    kind:kindFor(e.summary||''),
-    htmlLink:e.htmlLink
-  };
-}
-
-function startDemo(){
-  isDemo=true;
-  $('auth').classList.add('hidden');
-  $('app').classList.remove('hidden');
-  $('avatar').textContent='D';
-  $('userName').textContent='Demo';
-  const make=(id,title,h1,m1,h2,m2,kind,desc='')=>{
-    let s=new Date(),e=new Date();
-    s.setHours(h1,m1,0,0);e.setHours(h2,m2,0,0);
-    return{id,title,desc,start:s,end:e,startM:timeM(s),endM:timeM(e),icon:iconFor(title),kind:kind||kindFor(title)}
-  };
-  events=[
-    make('demo1','Team standup',9,30,9,50,'meeting','Check blockers before joining.'),
-    make('demo2','Deep work: SQL progression logic',10,0,12,0,'focus','Fix TAB_3a logic.'),
-    make('demo3','Lunch and reset',12,30,13,15,'health'),
-    make('demo4','Power BI report build',14,0,15,30,'focus'),
-    make('demo5','Gym',18,0,19,0,'health')
-  ];
-  state={
-    items:{
-      demo2:{
-        goal:'Fix progression report logic',
-        energy:'deep',
-        tasks:[
-          {id:uid(),title:'Open SQL project',estimate:5,done:true},
-          {id:uid(),title:'Review issue',estimate:15,done:true},
-          {id:uid(),title:'Fix TAB_3a logic',estimate:40,done:false},
-          {id:uid(),title:'Run tests',estimate:25,done:false},
-          {id:uid(),title:'Document changes',estimate:10,done:false}
-        ],
-        notes:'Remember to compare before/after output.',
-        sessions:[]
-      }
-    },
-    brainDump:[
-      {id:uid(),text:'Email Carol about ticket',done:false},
-      {id:uid(),text:'Buy cat food',done:false}
-    ],
-    dailyReviews:{},
-    settings:{name:'Rafat'}
-  };
-  render();
-}
-
-function uid(){return Math.random().toString(36).slice(2)+Date.now().toString(36)}
-function iconFor(t){t=t.toLowerCase();if(/standup|meeting|call|sync/.test(t))return'💬';if(/sql|power|code|deep|focus|work|report|build/.test(t))return'🎯';if(/gym|walk|doctor|lunch|dinner|health/.test(t))return'🟢';if(/birthday|party|personal/.test(t))return'🟠';return'📅'}
-function kindFor(t){t=t.toLowerCase();if(/standup|meeting|call|sync/.test(t))return'meeting';if(/gym|walk|doctor|lunch|dinner|health/.test(t))return'health';if(/deep|focus|sql|power|code|report|build/.test(t))return'focus';return'personal'}
-function colorFor(k){return k==='focus'?'var(--focus)':k==='meeting'?'var(--meeting)':k==='health'?'var(--health)':k==='urgent'?'var(--urgent)':'var(--personal)'}
-function tintFor(k){return k==='focus'?'rgba(124,58,237,.12)':k==='meeting'?'rgba(37,99,235,.11)':k==='health'?'rgba(22,163,74,.11)':'rgba(234,88,12,.11)'}
-function guessEnergy(e){return e.kind==='focus'?'deep':e.kind==='meeting'?'medium':'easy'}
-function status(e){const n=minsNow();if(n>=e.endM)return'done';if(n>=e.startM)return'now';if(e.startM-n<=10)return'soon';return'later'}
-function getNowEvent(){return events.find(e=>status(e)==='now')}
-function getNextEvent(){return events.find(e=>['soon','later'].includes(status(e)))}
-function byStatus(st){return events.filter(e=>status(e)===st)}
-function energyLabel(e){return e==='deep'?'🟣 Deep':e==='medium'?'🟡 Medium':'🟢 Easy'}
-function nextTask(d){return (d.tasks||[]).find(t=>!t.done)}
+function ev(id,title,h,m,h2,m2,kind){return{id,title,startM:h*60+m,endM:h2*60+m2,icon:icon(title),kind}}
+function id(){return Math.random().toString(36).slice(2)}
+function task(title,estimate,done){return{id:id(),title,estimate,done}}
+function icon(t){t=t.toLowerCase();if(/meet|standup|call|sync/.test(t))return'💬';if(/sql|power|bi|deep|focus|report|code|build/.test(t))return'🎯';if(/gym|walk|doctor|lunch|dinner|health/.test(t))return'🟢';return'📅'}
+function kind(t){t=t.toLowerCase();if(/meet|standup|call|sync/.test(t))return'meeting';if(/gym|walk|doctor|lunch|dinner|health/.test(t))return'health';if(/sql|power|bi|deep|focus|report|code|build/.test(t))return'focus';return'personal'}
+function col(k){return k==='focus'?'var(--purple)':k==='meeting'?'var(--blue)':k==='health'?'var(--green)':'var(--orange)'}
+function tint(k){return k==='focus'?'rgba(124,58,237,.12)':k==='meeting'?'rgba(37,99,235,.11)':k==='health'?'rgba(22,163,74,.11)':'rgba(234,88,12,.11)'}
+function data(e){return state.items[e.id]||(state.items[e.id]={goal:'',energy:e.kind==='focus'?'deep':e.kind==='meeting'?'medium':'easy',tasks:[],notesHistory:[],sessions:[]})}
+function stat(e){let n=nowM();if(n>=e.endM)return'done';if(n>=e.startM)return'now';if(e.startM-n<=10)return'soon';return'later'}
+function nowEv(){return events.find(e=>stat(e)==='now')}
+function nextEv(){return events.find(e=>['soon','later'].includes(stat(e)))}
+function current(){return events.find(e=>e.id===selected)||nowEv()||nextEv()}
+function timePct(e){let n=nowM();if(n<=e.startM)return 0;if(n>=e.endM)return 100;return Math.round((n-e.startM)/(e.endM-e.startM)*100)}
+function taskPct(d){return d.tasks.length?Math.round(d.tasks.filter(t=>t.done).length/d.tasks.length*100):0}
+function nextTask(d){return d.tasks.find(t=>!t.done)}
+function lastNote(d){return [...(d.notesHistory||[])].sort((a,b)=>b.date.localeCompare(a.date))[0]}
+function energy(e){return e==='deep'?'🟣 Deep':e==='medium'?'🟡 Medium':'🟢 Easy'}
 
 function render(){
   if($('app').classList.contains('hidden'))return;
-  const nowEv=getNowEvent(),nextEv=getNextEvent();
-  const focusBlocks=events.filter(e=>e.kind==='focus').length;
-  const meetings=events.filter(e=>e.kind==='meeting').length;
-  let html=`<div class="hero"><div class="morning"><div class="kicker">Today</div><div class="hello">Good ${greeting()}, Rafat</div><div class="soft" style="margin-top:6px">One thing at a time. Calendar events are containers; tasks are the real work.</div><div class="summary"><span class="pill deep">🎯 ${focusBlocks} focus blocks</span><span class="pill meet">💬 ${meetings} meetings</span><span class="pill easy">✅ ${completedToday()} tasks done</span>${energyWarning()}</div></div>${brainHtml()}</div>`;
-  html+=`<div class="section-title">Now</div>${nowCard(nowEv,nextEv)}`;
-  html+=`<div class="section-title">Next</div><div class="list">${eventRows(byStatus('soon').concat(byStatus('later')).slice(0,4))||empty('Nothing else scheduled today.')}</div>`;
-  html+=`<div class="section-title">Later / Done</div><div class="list">${eventRows(byStatus('done').slice(-4))||empty('Completed events will appear here.')}</div>`;
-  $('main').innerHTML=html;
-  renderPanel();
+  let f=events.filter(e=>e.kind==='focus').length,m=events.filter(e=>e.kind==='meeting').length,done=Object.values(state.items).reduce((a,d)=>a+(d.tasks||[]).filter(t=>t.done).length,0);
+  $('main').innerHTML=`<div class="hero"><div class="card"><div class="kicker">Today timeline</div><div class="hello">Good ${new Date().getHours()<12?'morning':new Date().getHours()<18?'afternoon':'evening'}, Rafat</div><div class="soft">Time is the map. Tasks are the steps inside each time block.</div><div class="pills"><span class="pill">🎯 ${f} focus blocks</span><span class="pill">💬 ${m} meetings</span><span class="pill">✅ ${done} tasks done</span></div></div>${brainHTML()}</div><div class="section">Today timeline</div><div class="timeline">${events.map(eventHTML).join('')||'<div class=card>No events today.</div>'}</div>`;
+  panel();
 }
-
-function greeting(){let h=now().getHours();return h<12?'morning':h<18?'afternoon':'evening'}
-function completedToday(){return Object.values(state.items).reduce((a,x)=>a+doneCount(x.tasks||[]),0)}
-function energyWarning(){let deep=events.filter(e=>e.kind==='focus').length;return deep>=3?`<span class="pill warn">⚠️ heavy focus day</span>`:''}
-function empty(t){return`<div class="empty-now">${t}</div>`}
-
-function brainHtml(){
-  return `<div class="brain"><div class="brain-title">Brain dump</div><div class="tiny">Capture distractions without leaving the task.</div><div class="capture"><input id="brainInput" placeholder="Quick capture…" onkeydown="if(event.key==='Enter')addBrain()"><button class="btn primary" onclick="addBrain()">+</button></div><div class="dump-list">${state.brainDump.filter(x=>!x.done).slice(0,6).map(x=>`<label class="dump-item"><input type="checkbox" onchange="toggleBrain('${x.id}')"><span>${safe(x.text)}</span></label>`).join('')||'<div class="tiny" style="margin-top:10px">Empty. Nice.</div>'}</div></div>`
+function brainHTML(){return`<div class="card"><div class="kicker">Brain dump</div><b>Capture, then return</b><div class="capture"><input id="brainInput" placeholder="Distracting thought…" onkeydown="if(event.key==='Enter')addBrain()"><button class="btn primary" onclick="addBrain()">+</button></div><div class="dump">${state.brainDump.filter(x=>!x.done).slice(0,5).map(x=>`<label><input type="checkbox" onchange="toggleBrain('${x.id}')"><span>${esc(x.text)}</span></label>`).join('')||'<span class=tiny>Empty. Nice.</span>'}</div></div>`}
+function eventHTML(e){
+  let d=data(e),p=timePct(e),tp=taskPct(d),nt=nextTask(d),ln=lastNote(d),s=stat(e),left=s==='now'?`${Math.max(0,e.endM-nowM())}m left`:s==='done'?'done':`in ${Math.max(0,e.startM-nowM())}m`;
+  return`<div class="event" onclick="select('${e.id}')"><div class="timecol"><div class="time mono">${fm(e.startM)}</div><div class="time2 mono">${fm(e.endM)}</div></div><div class="ecard ${selected===e.id?'sel':''} ${s==='now'?'now':''}" style="--c:${col(e.kind)};--t:${tint(e.kind)}"><div class="ehead"><div class="ico">${e.icon}</div><div><div class="title">${esc(e.title)}</div><div class="meta">${energy(d.energy)} · ${e.endM-e.startM}m · ${left}</div></div><span class="chip">${s}</span></div><div class="bar"><div class="fill" style="width:${p}%"></div></div><div class="taskline"><b>${nt?'→ '+esc(nt.title):'No next step yet'}</b><span class="tiny">${tp}% tasks</span></div>${ln?`<div class="context">Last note: ${esc(ln.text||plain(ln.html)).slice(0,120)}</div>`:''}</div></div>`
 }
+function select(id){selected=id;activeDate=null;render()}
 
-function nowCard(ev,next){
-  if(!ev&&!next)return empty('No current or upcoming event. This is protected white space.');
-  const e=ev||next,d=dataFor(e),p=pctTasks(d.tasks||[]),c=colorFor(e.kind),t=tintFor(e.kind),task=nextTask(d);
-  return `<div class="now-card" style="--c:${c};--tint:${t}" onclick="selectEvent('${e.id}')"><div class="now-grid"><div class="big-icon">${e.icon}</div><div><div class="kicker">${ev?'Current focus':'Up next'} · ${fmtM(e.startM)}–${fmtM(e.endM)}</div><div class="event-title">${safe(e.title)}</div><div class="next-step">${task?`Next tiny step: ${safe(task.title)}`:'No task breakdown yet. Break it into tiny steps.'}</div><div class="progress"><div class="bar" style="width:${p}%"></div></div><div class="tiny" style="margin-top:6px">${doneCount(d.tasks||[])} / ${(d.tasks||[]).length} tasks complete</div><div class="card-actions"><button class="btn focus" onclick="event.stopPropagation();selectEvent('${e.id}');startFocus()">Start Focus</button><button class="btn" onclick="event.stopPropagation();selectEvent('${e.id}');breakdown('${e.id}')">✨ Break down</button></div></div><div class="timer-big mono">${ev?Math.max(0,e.endM-minsNow())+'m left':'in '+Math.max(0,e.startM-minsNow())+'m'}</div></div></div>`
+function tab(t,el){currentTab=t;document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));el.classList.add('on');panel()}
+function panel(){
+  let e=current();if(!e){$('panel').innerHTML='<div class=empty>Select an event.</div>';return}
+  let d=data(e),ti=tint(e.kind);
+  if(currentTab==='notes')return notes(e,d,false);
+  if(currentTab==='history')return notes(e,d,true);
+  if(currentTab==='review')return review();
+  $('panel').innerHTML=`<div class="dhead"><div class="dico" style="--t:${ti}">${e.icon}</div><div><div class="dtitle">${esc(e.title)}</div><div class="tiny">${fm(e.startM)}–${fm(e.endM)} · ${timePct(e)}% time</div></div></div>
+  <div class="field"><div class="label">Goal</div><input class="input" value="${esc(d.goal||'')}" oninput="state.items['${e.id}'].goal=this.value;save()"></div>
+  <div class="field"><div class="label">Energy</div><div class="energy">${['easy','medium','deep'].map(x=>`<button class="${d.energy===x?'on':''}" style="--t:${ti}" onclick="state.items['${e.id}'].energy='${x}';save();panel()">${energy(x)}</button>`).join('')}</div></div>
+  <div class="field"><div class="label">Tasks inside this time block</div><div class="tasks">${d.tasks.map(t=>`<div class="task ${t.done?'done':''}"><input type="checkbox" ${t.done?'checked':''} onchange="toggleTask('${e.id}','${t.id}')"><div class="tt">${esc(t.title)}</div><div class="est">${t.estimate||10}m</div></div>`).join('')||'<span class=tiny>No tasks yet.</span>'}</div><div class="add"><input id="taskText" placeholder="Tiny next step"><input id="taskEst" type="number" value="10"><button class="btn" onclick="addTask('${e.id}')">Add</button></div></div>
+  <button class="btn primary" onclick="breakdown('${e.id}')">✨ Break down</button> <button class="btn focus" onclick="startFocus()">🎧 Focus with context</button>
+  <div class="field"><div class="label">Templates</div><div class="templates">${['SQL Development','Power BI','Meeting','Admin'].map(x=>`<button class="template" onclick="applyTemplate('${e.id}','${x}')">${x}</button>`).join('')}</div></div>`;
 }
-
-function eventRows(list){
-  return list.map(e=>{
-    const d=dataFor(e),p=pctTasks(d.tasks||[]),t=tintFor(e.kind);
-    return `<div class="event-row ${selectedId===e.id?'selected':''}" style="--tint:${t}" onclick="selectEvent('${e.id}')"><div class="timebox"><div class="time mono">${fmtM(e.startM)}</div><div class="time2 mono">${fmtM(e.endM)}</div></div><div class="row-icon">${e.icon}</div><div style="min-width:0"><div class="row-title">${safe(e.title)}</div><div class="row-meta">${energyLabel(d.energy)} · ${Math.max(0,e.endM-e.startM)} min</div><div class="task-mini">${p}% · ${nextTask(d)?safe(nextTask(d).title):'No next step'}</div></div><span class="chip">${status(e)}</span></div>`
-  }).join('');
+function addTask(eid){let text=$('taskText').value.trim();if(!text)return;state.items[eid].tasks.push(task(text,+$('taskEst').value||10,false));save();render()}
+function toggleTask(eid,tid){let t=state.items[eid].tasks.find(x=>x.id===tid);if(t)t.done=!t.done;save();render()}
+function addBrain(){let i=$('brainInput'),text=i.value.trim();if(!text)return;state.brainDump.unshift({id:id(),text,done:false});i.value='';save();render()}
+function toggleBrain(idv){let b=state.brainDump.find(x=>x.id===idv);if(b)b.done=!b.done;save();render()}
+const templates={'SQL Development':['Open SQL project','Review issue','Find affected table/rule','Implement change','Run before/after tests','Document output'],'Power BI':['Open dataset','Validate data quality','Build visuals','Review filters','Test interactions','Publish/share report'],'Meeting':['Open agenda','Write desired outcome','Capture decisions','Capture actions','Schedule follow-ups'],'Admin':['Open inbox/list','Pick top 3','Do first 10-minute task','File/delete leftovers','Write next action']};
+function applyTemplate(eid,name){state.items[eid].tasks=templates[name].map((x,i)=>task(x,i?15:5,false));if(!state.items[eid].goal)state.items[eid].goal=name;save();render()}
+function breakdown(eid){let e=events.find(x=>x.id===eid),t=e.title.toLowerCase();applyTemplate(eid,/sql|query|database|progression/.test(t)?'SQL Development':/power|bi|report|dashboard/.test(t)?'Power BI':/meet|standup|sync|call/.test(t)?'Meeting':'Admin')}
+function ensureNote(d){let n=d.notesHistory.find(x=>x.date===today());if(!n){n={date:today(),text:''};d.notesHistory.unshift(n);save()}return n}
+function notes(e,d,hist){
+  if(!hist)ensureNote(d);d.notesHistory.sort((a,b)=>b.date.localeCompare(a.date));if(!activeDate)activeDate=hist?(d.notesHistory[0]?.date||today()):today();
+  let n=d.notesHistory.find(x=>x.date===activeDate)||d.notesHistory[0]||ensureNote(d),ro=hist||n.date!==today(),ti=tint(e.kind);
+  $('panel').innerHTML=`<div class="dhead"><div class="dico" style="--t:${ti}">${e.icon}</div><div><div class="dtitle">${hist?'Notes history':'Today notes'}</div><div class="tiny">${esc(e.title)}</div></div></div><div class="field notegrid"><div>${d.notesHistory.map(x=>`<button class="hist ${x.date===n.date?'on':''}" style="--t:${ti}" onclick="activeDate='${x.date}';panel()">${x.date}</button>`).join('')}</div><div><div class="label">${n.date}${ro?' · read only':''}</div><textarea class="textarea" ${ro?'readonly':''} oninput="saveNote('${e.id}','${n.date}',this.value)">${esc(n.text||plain(n.html))}</textarea></div></div>`;
 }
-
-function selectEvent(id){selectedId=id;renderPanel();render()}
-
-function setTab(tab,el){
-  currentTab=tab;
-  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
-  el.classList.add('on');
-  renderPanel();
-}
-
-function renderPanel(){
-  const e=currentEvent();
-  if(!e){$('panel').innerHTML='<div class="panel-empty">Select an event to create a goal and task breakdown.</div>';return}
-  const d=dataFor(e),c=colorFor(e.kind),t=tintFor(e.kind);
-  if(currentTab==='notes'){
-    $('panel').innerHTML=`<div class="detail-head"><div class="detail-icon" style="--tint:${t}">${e.icon}</div><div><div class="detail-title">${safe(e.title)}</div><div class="tiny">${fmtM(e.startM)}–${fmtM(e.endM)}</div></div></div><div class="field"><div class="label">Notes</div><textarea class="textarea" oninput="updateNotes('${e.id}',this.value)">${safe(d.notes||'')}</textarea></div>${e.desc?`<div class="field"><div class="label">Calendar description</div><div class="soft">${safe(e.desc)}</div></div>`:''}`;
-    return;
-  }
-  if(currentTab==='review'){renderReview();return}
-  $('panel').innerHTML=`<div class="detail-head"><div class="detail-icon" style="--tint:${t}">${e.icon}</div><div><div class="detail-title">${safe(e.title)}</div><div class="tiny">${fmtM(e.startM)}–${fmtM(e.endM)} · Google Calendar event</div></div></div>
-  <div class="field"><div class="label">Goal</div><input class="input" placeholder="What is the outcome?" value="${safe(d.goal||'')}" oninput="updateGoal('${e.id}',this.value)"></div>
-  <div class="field"><div class="label">Energy</div><div class="energy">${['easy','medium','deep'].map(x=>`<button class="${d.energy===x?'on':''}" style="--c:${c};--tint:${t}" onclick="setEnergy('${e.id}','${x}')">${energyLabel(x)}</button>`).join('')}</div></div>
-  <div class="field"><div class="label">Tasks</div><div class="tasks">${(d.tasks||[]).map(taskHtml(e.id)).join('')||'<div class="tiny">No tasks yet. Use Break down or add one tiny step.</div>'}</div><div class="add-task"><input id="taskText" placeholder="Tiny next step"><input id="taskEst" type="number" placeholder="min" value="10"><button class="btn" onclick="addTask('${e.id}')">Add</button></div></div>
-  <div class="field"><button class="btn primary" onclick="breakdown('${e.id}')">✨ Break event into tasks</button> <button class="btn focus" onclick="startFocus()">🎧 Start focus</button></div>
-  <div class="field"><div class="label">Templates</div><div class="template-grid">${['SQL Development','Power BI','Meeting','Admin'].map(x=>`<button class="template" onclick="applyTemplate('${e.id}','${x}')">${x}</button>`).join('')}</div></div>`;
-}
-
-function taskHtml(eid){
-  return t=>`<div class="task ${t.done?'done':''}"><input type="checkbox" ${t.done?'checked':''} onchange="toggleTask('${eid}','${t.id}')"><div class="task-text">${safe(t.title)}</div><div class="task-est">${t.estimate||10}m</div></div>`
-}
-
-async function updateGoal(id,v){state.items[id].goal=v;await saveState()}
-async function updateNotes(id,v){state.items[id].notes=v;await saveState()}
-async function setEnergy(id,v){state.items[id].energy=v;await saveState();renderPanel()}
-async function addTask(id){
-  let text=$('taskText')?.value.trim();
-  if(!text)return;
-  let est=+$('taskEst').value||10;
-  state.items[id].tasks.push({id:uid(),title:text,estimate:est,done:false});
-  await saveState();
-  renderPanel();
-  render();
-}
-async function toggleTask(eid,tid){
-  let t=state.items[eid].tasks.find(x=>x.id===tid);
-  if(t)t.done=!t.done;
-  await saveState();
-  renderPanel();
-  render();
-}
-async function addBrain(){
-  let i=$('brainInput'),text=i?.value.trim();
-  if(!text)return;
-  state.brainDump.unshift({id:uid(),text,done:false,created:new Date().toISOString()});
-  i.value='';
-  await saveState();
-  render();
-}
-async function toggleBrain(id){
-  let x=state.brainDump.find(b=>b.id===id);
-  if(x)x.done=!x.done;
-  await saveState();
-  render();
-}
-
-const templates={
- 'SQL Development':['Open SQL project','Review ticket / issue','Find affected tables','Implement change','Run before/after tests','Document result'],
- 'Power BI':['Open dataset','Validate data quality','Build visuals','Review filters','Test interactions','Publish / share report'],
- 'Meeting':['Open agenda','Write 1 desired outcome','Capture decisions','Capture actions','Schedule follow-ups'],
- 'Admin':['Open inbox/list','Pick 3 priority items','Do first 10-minute item','File or delete leftovers']
-};
-
-async function applyTemplate(id,name){
-  state.items[id].tasks=templates[name].map((x,i)=>({id:uid(),title:x,estimate:i?15:5,done:false}));
-  if(!state.items[id].goal)state.items[id].goal=name;
-  await saveState();
-  renderPanel();
-  render();
-}
-
-async function breakdown(id){
-  const e=events.find(x=>x.id===id),title=e.title.toLowerCase();
-  let name=/sql|query|database|progression/.test(title)?'SQL Development':/power|bi|report|dashboard/.test(title)?'Power BI':/meeting|standup|sync|call/.test(title)?'Meeting':'Admin';
-  await applyTemplate(id,name);
-}
-
+function saveNote(eid,date,text){let d=state.items[eid],n=d.notesHistory.find(x=>x.date===date);if(!n)d.notesHistory.unshift(n={date,text:''});n.text=text;save();render()}
+function review(){let k=today(),r=state.dailyReviews[k]||{};$('panel').innerHTML=`<div class="dtitle">Daily review</div><div class=tiny>No guilt. Carry context forward.</div>${['win','block','move'].map(x=>`<div class="field"><div class="label">${x==='win'?'What went well?':x==='block'?'What blocked you?':'Move to tomorrow'}</div><textarea class="textarea" oninput="state.dailyReviews['${k}']=state.dailyReviews['${k}']||{};state.dailyReviews['${k}']['${x}']=this.value;save()">${esc(r[x]||'')}</textarea></div>`).join('')}`}
 function startFocus(){
-  const e=currentEvent();
-  if(!e)return;
-  selectedId=e.id;
-  const d=dataFor(e);
-  if(!d.tasks.length)breakdown(e.id);
-  const task=nextTask(dataFor(e));
-  const t=tintFor(e.kind);
-  focusSession={eventId:e.id,start:Date.now()};
+  let e=current();if(!e)return;selected=e.id;let d=data(e);if(!d.tasks.length)breakdown(e.id);let t=nextTask(d),n=lastNote(d),p=timePct(e),left=Math.max(0,e.endM-nowM()),ti=tint(e.kind);
   $('focusScreen').classList.remove('hidden');
-  $('focusScreen').innerHTML=`<div class="focus-card" style="--tint:${t}"><div class="focus-top"><div class="focus-icon">${e.icon}</div><div><div class="kicker">Focus mode</div><div class="focus-title">${safe(e.title)}</div><div class="tiny">${fmtM(e.startM)}–${fmtM(e.endM)} · only the next step matters</div></div></div><div class="focus-task"><div class="focus-task-label">Current task</div><div class="focus-task-title">${task?safe(task.title):'Choose one tiny step'}</div><div class="focus-next">${nextTaskAfter(d,task)?'Next: '+safe(nextTaskAfter(d,task).title):'No next task yet.'}</div></div><div class="focus-buttons"><button class="btn focus" onclick="completeFocusTask()">Complete task</button><button class="btn" onclick="quickCaptureFocus()">Brain dump</button><button class="btn" onclick="exitFocus()">Exit</button></div></div>`;
+  $('focusScreen').innerHTML=`<div class="fcard" style="--t:${ti};--c:${col(e.kind)}"><div class="fgrid"><div><div class="kicker">Focus with event context</div><div class="ftitle">${e.icon} ${esc(e.title)}</div><div class="soft">${fm(e.startM)}–${fm(e.endM)} · ${left}m left · ${p}% through</div><div class="bar"><div class="fill" style="width:${p}%"></div></div><div class="fcurrent"><div class="kicker">Current step</div>${t?esc(t.title):'Choose one tiny step'}<div class="soft" style="font-size:14px;margin-top:10px">Goal: ${esc(d.goal||'No goal yet')}</div></div><button class="btn focus" onclick="completeStep()">Complete step</button> <button class="btn" onclick="quickCapture()">Brain dump</button> <button class="btn" onclick="exitFocus()">Exit</button></div><div><div class="box"><div class="label">Next tasks</div>${d.tasks.filter(x=>!x.done).slice(1,4).map(x=>`<div class=soft>□ ${esc(x.title)}</div>`).join('')||'<span class=tiny>No more tasks.</span>'}</div><div class="box"><div class="label">Last useful note</div><div class=soft>${n?esc(n.text||plain(n.html)):'No previous notes yet.'}</div></div></div></div></div>`;
 }
-
-function nextTaskAfter(d,task){
-  let i=d.tasks.indexOf(task);
-  return d.tasks.slice(i+1).find(x=>!x.done);
-}
-
-async function completeFocusTask(){
-  const e=currentEvent(),d=dataFor(e),t=nextTask(d);
-  if(t)t.done=true;
-  d.sessions.push({start:focusSession?.start,end:Date.now()});
-  await saveState();
-  startFocus();
-  render();
-}
-
-function quickCaptureFocus(){
-  let text=prompt('Capture distraction:');
-  if(text){
-    state.brainDump.unshift({id:uid(),text,done:false});
-    saveState();
-  }
-}
-
-function exitFocus(){
-  $('focusScreen').classList.add('hidden');
-  focusSession=null;
-  render();
-}
-
-function checkTransition(){
-  const n=minsNow();
-  const next=getNextEvent();
-  if(!next||next.startM-n>5||next.startM-n<0){
-    $('transitionBox').classList.add('hidden');
-    return;
-  }
-  $('transitionBox').classList.remove('hidden');
-  $('transitionBox').innerHTML=`<div class="brain-title">Transition support</div><div class="soft">${safe(next.title)} starts in ${next.startM-n} min.</div><div class="checklist"><label class="check"><input type="checkbox"> Save current work</label><label class="check"><input type="checkbox"> Water / toilet</label><label class="check"><input type="checkbox"> Open link or document</label><label class="check"><input type="checkbox"> Clear desk</label></div><div style="margin-top:12px"><button class="btn primary" onclick="$('transitionBox').classList.add('hidden')">Ready</button></div>`;
-}
-
-function renderReview(){
-  const k=dateKey(),r=state.dailyReviews[k]||{win:'',block:'',move:''};
-  $('panel').innerHTML=`<div class="detail-title">Daily review</div><div class="tiny">Two minutes. No guilt. Just carry forward.</div>
-  <div class="review"><div class="label">What went well?</div><textarea class="textarea" oninput="saveReview('win',this.value)">${safe(r.win)}</textarea></div>
-  <div class="review"><div class="label">What blocked you?</div><textarea class="textarea" oninput="saveReview('block',this.value)">${safe(r.block)}</textarea></div>
-  <div class="review"><div class="label">Move to tomorrow</div><textarea class="textarea" oninput="saveReview('move',this.value)">${safe(r.move)}</textarea></div>`;
-}
-
-async function saveReview(k,v){
-  const d=dateKey();
-  state.dailyReviews[d]=state.dailyReviews[d]||{};
-  state.dailyReviews[d][k]=v;
-  await saveState();
-}
+function completeStep(){let e=current(),d=data(e),t=nextTask(d);if(t)t.done=true;d.sessions.push({at:new Date().toISOString(),event:'complete'});save();startFocus();render()}
+function quickCapture(){let text=prompt('Capture distraction:');if(text){state.brainDump.unshift({id:id(),text,done:false});save()}}
+function exitFocus(){$('focusScreen').classList.add('hidden');render()}
+function transition(){let e=nextEv(),n=nowM();if(!e||e.startM-n>5||e.startM-n<0){$('trans').classList.add('hidden');return}$('trans').classList.remove('hidden');$('trans').innerHTML=`<b>Transition support</b><div class=soft>${esc(e.title)} starts in ${e.startM-n}m.</div><label><input type=checkbox> Save work</label><br><label><input type=checkbox> Water / toilet</label><br><label><input type=checkbox> Open link or doc</label><br><button class="btn primary" onclick="$('trans').classList.add('hidden')">Ready</button>`}
 </script>
 </body>
 </html>
